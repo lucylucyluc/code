@@ -11,3 +11,39 @@ The last code, "realdata2" is for the breast dataset under Cox Model with Covari
 Note that in the real data analysis, the calculation process of Cox Model with Covariate-free Random Change Point can be implement by code set2.
 
 In all code, the "dat" is data, which is a list. The "par0" is the initial value that needs to be input, "k" is the number of inner knots of spline, and "intebound" include the lower and upper bounds of integral.
+
+Example
+Here, we will provide an example to illustrate how to run the code.
+
+## set1_norm
+###generating data process 
+n=500
+alpha0 = c(-0.3,1.2,0.6)
+beta0 = c(1.4,-0.5,0.2)
+mu0 = 0
+lam0  = 1 
+X1 = rnorm(n,1,2)     ###NORMIAL DISTRIBUTION
+X2 = rbinom(n,1,0.6)    ### BINOMIAL DISTRIBUTION
+X3 = runif(n,-2,2)
+X = cbind(X1,X2,X3)   #### covariates
+
+U = runif(n,-2,2)      
+eta0 = rnorm(n,mu0,lam0)  
+sigmaU = sd(U)
+
+############# Cox model data
+V = runif(n,0,1)
+H = exp(X%*%alpha0 + X%*%beta0*(1*(U>eta0)))
+TT = sqrt(-(log(1-V)/H))   ### lambda0=2*t  event time
+C=runif(n,1,3)             ### noninformative censoring time 
+delta = 1*(TT<=C)
+Y = pmin(TT,C)             ### survival time
+Y = c(Y)
+
+
+data<-list(Y,delta,X,U)
+source("maincode1.R")
+k = 3;
+intebound = c(-10,10)
+par0 = c()   ### input the inivial value
+set1_norm(data,par0,k,intebound)
