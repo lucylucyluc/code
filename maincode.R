@@ -1,5 +1,3 @@
-
-
 set1_exp = function(dat,par0,k,intebound){
   ## dat: data = list(Y,delta,X,U)
   ## par0: initial value, including parametric part theta0=(alpha0,beta0,nu0) and nonparametric part xi0 
@@ -74,7 +72,8 @@ set1_exp = function(dat,par0,k,intebound){
     return(loglf)
   }
   result =optim(par0,seieveloglike_exp,hessian = TRUE)
-  return(result)
+  BIC  = result$value + log(n)*(length(par0))
+  return(list(result = result,BIC = BIC))
 }
 
 
@@ -155,8 +154,11 @@ set1_norm = function(dat,par0,k,intebound){
     return(loglf)
   }
   result =optim(par0,seieveloglike_norm,hessian = TRUE,control = list(maxit=5000))
-  return(result)
+  BIC  = result$value + log(n)*(length(par0))
+  return(list(result = result,BIC = BIC))
 }
+
+
 set2 = function(dat,par0,k,intebound){
   ## dat: data = list(Y,delta,Z,X,U)
   ## par0: initial value, including parametric part theta0=(alpha0,beta0,nu0) and nonparametric part xi0 
@@ -235,9 +237,12 @@ set2 = function(dat,par0,k,intebound){
     loglf = -sum(lint)
     return(loglf)
   }
-  result =optim(par0,seieveloglike2_norm,hessian = TRUE,control = list(maxit=5000))
-  return(result)
+  result =optim(par0,seieveloglike2_norm,hessian = TRUE)
+  BIC  = result$value + log(n)*(length(par0))
+  return(list(result = result,BIC = BIC))
 }
+
+
 set3 = function(dat,par0,k,intebound){
   ## dat: data = list(Y,delta,X,U)
   ## par0: initial value, including parametric part theta0=(alpha0,beta0,nu0) and nonparametric part xi0 
@@ -316,10 +321,12 @@ set3 = function(dat,par0,k,intebound){
     return(loglf)
   }
   
-  result =optim(par0,seieveloglike,hessian = TRUE,control = list(maxit=5000))
-  return(result)
+  result =optim(par0,seieveloglike,hessian = TRUE)
+  BIC  = result$value + log(n)*(length(par0))
+  return(list(result = result,BIC = BIC))
 }
-### In the realdata, the estimation of model 1 can use code set2.
+
+
 realdata2 = function(dat,par0,k,intebound){
   ## dat: data = list(Y,delta,Z,X,U)
   ## par0: initial value, including parametric part theta0=(alpha0,beta0,nu0) and nonparametric part xi0 
@@ -401,8 +408,9 @@ realdata2 = function(dat,par0,k,intebound){
     loglf = -sum(log(lint))
     return(loglf)
   }
-  result =tryCatch({ optim(par0,seieveloglikehood1,hessian = TRUE,control = list(maxit=1000,abstol=10^-6,reltol=10^-6))},error = function(e){99} )
-  return(result)
+  result = optim(par0,seieveloglikehood1,hessian = TRUE,control = list(maxit=1000,abstol=10^-6,reltol=10^-6))
+  BIC  = result$value + log(n)*(length(par0))
+  return(list(result = result,BIC = BIC))
 }
 
 
